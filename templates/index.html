@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Health Assistant</title>
+    <!-- Font Awesome for Medical Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00bfa5; /* Medical Teal */
+            --primary-dark: #00897b;
+            --secondary-color: #e0f2f1; /* Light Teal Background */
+            --accent-color: #ff5252; /* Heart Red */
+            --text-color: #37474f;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- 2. Medical Theme: Background Animations --- */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-icon {
+            position: absolute;
+            color: rgba(0, 191, 165, 0.1); /* Subtle medical icons */
+            font-size: 3rem;
+            animation: float 15s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- 1. Welcome Experience Overlay --- */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--white);
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .welcome-content {
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .doctor-illustration {
+            font-size: 8rem;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .start-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background-color: var(--white);
+            color: var(--primary-dark);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 30px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* --- Chat Interface --- */
+        .chat-container {
+            max-width: 800px;
+            width: 95%;
+            margin: 20px auto;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            height: 85vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chat-header {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-avatar {
+            font-size: 2rem;
+            margin-right: 15px;
+            background: var(--white);
+            color: var(--primary-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            max-width: 80%;
+            clear: both;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* --- 2. Medical Theme: Chat Bubbles --- */
+        /* Bot Message Styling (Clipboard/Medical Style) */
+        .bot-message {
+            float: left;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .bot-avatar {
+            width: 35px;
+            height: 35px;
+            background: var(--primary-color);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .bot-avatar i {
+            animation: gentle-bounce 2s infinite;
+        }
+
+        .bot-bubble {
+            background: var(--white);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 0 15px 15px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary-color); /* Clipboard accent */
+            position: relative;
+        }
+        
+        .bot-bubble::before {
+            /* Medical Cross Icon Decoration */
+            content: '+';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--accent-color);
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* User Message Styling */
+        .user-message {
+            float: right;
+        }
+
+        .user-bubble {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 12px 20px;
+            border-radius: 15px 15px 0 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Input Area */
+        .input-container {
+            padding: 20px;
+            background: var(--white);
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-container input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .input-container button {
+            margin-left: 10px;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-container button:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        /* --- 3. Engagement Milestone Notification --- */
+        .milestone-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--white);
+            padding: 15px 25px;
+            border-radius: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            border: 2px solid var(--primary-color);
+        }
+
+        .milestone-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .milestone-icon {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            margin-right: 10px;
+            animation: beat 1s infinite;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        @keyframes gentle-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+        
+        .heart-particle {
+            position: fixed;
+            color: var(--accent-color);
+            font-size: 20px;
+            pointer-events: none;
+            animation: floatUp 2s ease-out forwards;
+            z-index: 1500;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .chat-container { height: 100vh; margin: 0; width: 100%; border-radius: 0; }
+            .message { max-width: 90%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Animations -->
+    <div class="bg-animation" id="bgAnimation">
+        <!-- Icons will be added by JS -->
+    </div>
+
+    <!-- 1. Welcome Overlay -->
+    <div id="welcomeOverlay" class="welcome-overlay">
+        <div class="welcome-content">
+            <div class="doctor-illustration">
+                <i class="fas fa-user-doctor"></i>
+            </div>
+            <h1>Welcome to HealthBot</h1>
+            <p>Your personal AI medical assistant.</p>
+            <button class="start-btn" onclick="startConsultation()">Start Consultation</button>
+        </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-avatar"><i class="fas fa-user-md"></i></div>
+            <div>
+                <h2 style="margin: 0; font-size: 1.2rem;">Dr. AI Assistant</h2>
+                <p style="margin: 0; font-size: 0.8rem; opacity: 0.9;">Online • Ready to help</p>
+            </div>
+        </div>
+        
+        <div id="chatMessages" class="chat-messages">
+            <!-- Initial Bot Message -->
+            <div class="message bot-message">
+                <div class="bot-avatar"><i class="fas fa-user-doctor"></i></div>
+                <div class="bot-bubble">
+                    Hello! I'm your healthcare assistant. How can I help you today?
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Type your health question here..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- 3. Milestone Toast -->
+    <div id="milestoneToast" class="milestone-toast">
+        <div class="milestone-icon"><i class="fas fa-heart"></i></div>
+        <div>
+            <strong>Great job!</strong><br>
+            Way to take charge of your health!
+        </div>
+    </div>
+
+    <script>
+        // --- State Management ---
+        let messageCount = 0;
+        const milestoneThreshold = 3;
+        let milestoneReached = false;
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            createBackgroundIcons();
+        });
+
+        function createBackgroundIcons() {
+            const container = document.getElementById('bgAnimation');
+            const icons = ['fa-heartbeat', 'fa-pills', 'fa-user-md', 'fa-dna', 'fa-stethoscope', 'fa-hospital'];
+            
+            for (let i = 0; i < 15; i++) {
+                const icon = document.createElement('i');
+                icon.className = `fas ${icons[Math.floor(Math.random() * icons.length)]} floating-icon`;
+                icon.style.left = `${Math.random() * 100}%`;
+                icon.style.animationDuration = `${10 + Math.random() * 20}s`;
+                icon.style.animationDelay = `${Math.random() * 10}s`;
+                icon.style.fontSize = `${1 + Math.random() * 2}rem`;
+                container.appendChild(icon);
+            }
+        }
+
+        // --- UI Actions ---
+        function startConsultation() {
+            const overlay = document.getElementById('welcomeOverlay');
+            overlay.style.opacity = '0';
+            overlay.style.visibility = 'hidden';
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+            
+            // Add User Message
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Increment Counter & Check Milestone
+            messageCount++;
+            checkMilestone();
+
+            // Fetch Response
+            fetch('/get_response', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMessage(data.response, 'bot');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addMessage("Sorry, I'm having trouble connecting. Please try again.", 'bot');
+            });
+        }
+        
+        function addMessage(text, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            
+            if (sender === 'bot') {
+                messageDiv.className = 'message bot-message';
+                messageDiv.innerHTML = `
+                    <div class="bot-avatar"><i class="fas fa-user-doctor"></i></div>
+                    <div class="bot-bubble">${text}</div>
+                `;
+            } else {
+                messageDiv.className = 'message user-message';
+                messageDiv.innerHTML = `
+                    <div class="user-bubble">${text}</div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // --- 3. Milestone Logic ---
+        function checkMilestone() {
+            if (messageCount > milestoneThreshold && !milestoneReached) {
+                milestoneReached = true;
+                showMilestoneCelebration();
+            }
+        }
+
+        function showMilestoneCelebration() {
+            // Show Toast
+            const toast = document.getElementById('milestoneToast');
+            toast.classList.add('show');
+            
+            // Hide Toast after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
+
+            // Trigger Heart Animation
+            spawnHearts();
+        }
+
+        function spawnHearts() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart-particle';
+                    heart.innerHTML = '<i class="fas fa-heart"></i>';
+                    heart.style.left = `${Math.random() * 100}%`;
+                    heart.style.top = `${50 + Math.random() * 50}%`;
+                    document.body.appendChild(heart);
+                    
+                    // Cleanup
+                    setTimeout(() => heart.remove(), 2000);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>

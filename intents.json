@@ -1,0 +1,49 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": ["Hi", "Hello", "Good morning", "Good evening", "Hey"],
+      "responses": ["Hello! I'm your healthcare assistant. How can I help you today?", "Hi there! What health concerns can I help you with?"]
+    },
+    {
+      "tag": "fever",
+      "patterns": ["I have fever", "high temperature", "feeling hot", "body temperature is high", "fever symptoms"],
+      "responses": ["Fever can be a sign of infection. Monitor your temperature and consider seeing a doctor if it persists above 101°F (38.3°C). Stay hydrated and rest.", "For fever, try to rest, drink plenty of fluids, and take acetaminophen or ibuprofen as directed. Consult a healthcare provider if fever is high or persistent."]
+    },
+    {
+      "tag": "headache",
+      "patterns": ["I have headache", "head pain", "migraine", "head hurts", "headache relief"],
+      "responses": ["Headaches can have various causes. Try rest, hydration, and over-the-counter pain relievers. If headaches are severe or frequent, consult a healthcare provider.", "For headache relief, try resting in a quiet, dark room, applying a cold or warm compress, and staying hydrated. See a doctor if headaches worsen."]
+    },
+    {
+      "tag": "cold_flu",
+      "patterns": ["I have cold", "flu symptoms", "runny nose", "cough", "sore throat", "stuffy nose"],
+      "responses": ["Cold and flu symptoms include runny nose, cough, and sore throat. Get plenty of rest, stay hydrated, and consider over-the-counter medications for symptom relief.", "For cold/flu: Rest, drink fluids, use throat lozenges, and take decongestants if needed. See a doctor if symptoms worsen or persist beyond 10 days."]
+    },
+    {
+      "tag": "stomach_pain",
+      "patterns": ["stomach ache", "abdominal pain", "belly pain", "stomach hurts", "digestive issues"],
+      "responses": ["Stomach pain can have many causes. Try eating bland foods, staying hydrated, and avoiding spicy foods. Seek medical attention for severe or persistent pain.", "For mild stomach pain, try the BRAT diet (bananas, rice, applesauce, toast) and stay hydrated. Consult a healthcare provider for severe symptoms."]
+    },
+    {
+      "tag": "medication_info",
+      "patterns": ["medicine information", "drug side effects", "medication dosage", "how to take medicine"],
+      "responses": ["Always consult with a healthcare provider or pharmacist about medications. Follow prescribed dosages and be aware of potential side effects listed on medication labels.", "For medication questions, consult your doctor or pharmacist. Never exceed recommended dosages and report any unusual side effects to your healthcare provider."]
+    },
+    {
+      "tag": "appointment",
+      "patterns": ["book appointment", "schedule visit", "see doctor", "make appointment"],
+      "responses": ["To schedule an appointment, contact your healthcare provider's office directly. Many clinics also offer online scheduling through their websites or patient portals.", "For appointments, call your doctor's office or use their online portal. Prepare a list of symptoms and questions before your visit."]
+    },
+    {
+      "tag": "emergency",
+      "patterns": ["emergency", "urgent", "chest pain", "difficulty breathing", "severe bleeding"],
+      "responses": ["For medical emergencies, call 911 immediately or go to the nearest emergency room. Don't delay seeking emergency care for serious symptoms.", "This is a medical emergency! Call 911 or go to the emergency room immediately. Don't wait for symptoms like chest pain or difficulty breathing."]
+    },
+    {
+      "tag": "non_health",
+      "patterns": ["weather", "sports", "movies", "food recipes", "programming"],
+      "responses": ["I'm a healthcare chatbot and can only help with health-related questions. Please ask about symptoms, medications, or medical concerns.", "I specialize in healthcare topics only. How can I help you with your health questions today?"]
+    }
+  ]
+}
