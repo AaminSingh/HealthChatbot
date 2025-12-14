@@ -338,7 +338,8 @@ TEMPERATURE CONTROL: This prompt is designed to work with temperature=0.3 for fo
         elif self.api_provider == "gemini":
             import google.generativeai as genai
             genai.configure(api_key=self.api_key)
-            self.client = genai.GenerativeModel('gemini-pro')
+            # Use the latest flash model alias
+            self.client = genai.GenerativeModel('gemini-flash-latest')
     
     def detect_emergency(self, user_input: str) -> bool:
         """
@@ -660,23 +661,23 @@ TEMPERATURE CONTROL: This prompt is designed to work with temperature=0.3 for fo
 # Example usage function
 def test_chatbot():
     """Test function to demonstrate usage"""
-    # Initialize with your preferred provider
-    # Option 1: OpenAI
-    # chatbot = LLMHealthChatbot(api_provider="openai", api_key="your-openai-key")
+    from dotenv import load_dotenv
+    load_dotenv()
     
-    # Option 2: Gemini
-    # chatbot = LLMHealthChatbot(api_provider="gemini", api_key="your-gemini-key")
+    provider = os.getenv("LLM_PROVIDER", "openai")
+    print(f"Testing with provider: {provider}")
     
-    # Option 3: Fallback mode (for testing without API key)
-    chatbot = LLMHealthChatbot(use_fallback=True)
+    # Initialize chatbot
+    chatbot = LLMHealthChatbot(api_provider=provider, use_fallback=True)
+    
+    if chatbot.api_available:
+        print("✅ API is available and connected!")
+    else:
+        print("⚠️ API is NOT available. Running in fallback mode.")
     
     # Test queries
     test_queries = [
-        "I have knee pain",
-        "My eyes feel tired",
-        "I have a mild headache. What should I do?",
-        "I'm experiencing chest pain",  # Emergency test
-        "How can I improve my sleep quality?"
+        "How can I improve my sleep quality?" # This requires AI, fallback won't handle it well
     ]
     
     for query in test_queries:
