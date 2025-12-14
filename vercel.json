@@ -2,7 +2,7 @@
     "rewrites": [
         {
             "source": "/(.*)",
-            "destination": "/web_chatbot_llm.py"
+            "destination": "/app.py"
         }
     ]
 }
